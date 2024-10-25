@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-
+const validator=require('validator');
 const userSchema=new mongoose.Schema({
     firstName:{
        type:String,
@@ -15,11 +15,21 @@ const userSchema=new mongoose.Schema({
         required:true,
         unique:true,
         lowercase:true,
-        trim:true
+        trim:true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid email Address: "+value); 
+            }
+        }
     },
     password:{
         type:String,
         required:true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Your password is not strong : "+value); 
+            }
+        }
     },
     age:{
         type:Number,
@@ -36,13 +46,23 @@ const userSchema=new mongoose.Schema({
     photoUrl:{
         type:String,
         default:"https://stock.adobe.com/in/search/images?k=default+image",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid Photo URL: "+value);
+            }
+        }
     },
     about:{
         type:String,
         default:"This is default about of the user"
     },
     skills:{
-        type:[String]
+        type:[String],
+        validate(value){
+          if(new Set(value).size!==value.length){
+            throw new Error("skills must not contain duplicate");
+          }
+        }
     },
     // createdAt:{
     //     type:Date,
