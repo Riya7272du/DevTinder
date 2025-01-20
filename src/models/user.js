@@ -1,9 +1,12 @@
 const mongoose=require('mongoose');
 const validator=require('validator');
+const jwt =require('jsonwebtoken');
+const bcrypt=require('bcrypt');
 const userSchema=new mongoose.Schema({
     firstName:{
        type:String,
        required:true,
+       index:true,
        minlength:4,
        maxlength:80,
     },
@@ -37,6 +40,10 @@ const userSchema=new mongoose.Schema({
     },
     gender:{
         type: String,
+        enum:{
+            values:["female","male","other"],
+            message: `{Value} is not a valid gender type`
+        },
         validate(value){
             if(!["male","female","others"].includes(value)){
                 throw new Error("Gender data is not valid");
@@ -45,7 +52,7 @@ const userSchema=new mongoose.Schema({
     },
     photoUrl:{
         type:String,
-        default:"https://stock.adobe.com/in/search/images?k=default+image",
+        default: "https://geographyandyou.com/images/user-profile.png",
         validate(value){
             if(!validator.isURL(value)){
                 throw new Error("Invalid Photo URL: "+value);
@@ -70,6 +77,22 @@ const userSchema=new mongoose.Schema({
 },{
     timestamps:true,
 });
+userSchema.index({firstName:1});
+userSchema.index({gender:1});
+
+userSchema.methods.getJWT=async function(){
+    const user=this ;
+    const token=await jwt.sign({_id:user._id},"DEV@Tinder",{
+        expiresIn:"1d",
+     });
+     return token;
+}
+userSchema.methods.validatePassword = async function(passwordInputByUser) {
+    const user = this;
+    const passwordHash = user.password; // Corrected typo here
+    const isPasswordValid = await bcrypt.compare(passwordInputByUser, passwordHash);
+    return isPasswordValid;
+};
 
 const User=mongoose.model("User",userSchema);
 module.exports=User;
