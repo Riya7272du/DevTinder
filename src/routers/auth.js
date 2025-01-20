@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 
-router.post("/api/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
     console.log(req.body);
 
     try {
@@ -35,7 +35,7 @@ router.post("/api/signup", async (req, res) => {
     }
 })
 
-router.post("/api/login", async (req, res) => {
+router.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
 
