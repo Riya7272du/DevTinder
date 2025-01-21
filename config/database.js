@@ -1,10 +1,10 @@
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 
-const connectDB=async()=>{
-    await mongoose.connect("mongodb+srv://singhalriya912:Riya7272%40@devtinder.lqeye.mongodb.net/?retryWrites=true&w=majority&appName=DevTinder");
+const connectDB = async () => {
+    await mongoose.connect(process.env.DB_CONNECTION_SECRET);
 };
 
-module.exports=connectDB;
+module.exports = connectDB;
 // connectDB().then(()=>{
 //     console.log("database connection established...");
 // }).catch(err=>{
