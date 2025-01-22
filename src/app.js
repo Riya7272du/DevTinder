@@ -13,10 +13,17 @@ require("dotenv").config();
 
 require("./utils/cronjob");
 
+// app.use(cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+// }));
+
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: "http://localhost:5173", // Replace with your frontend's origin
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"], // Include PATCH
+    credentials: true, // Allow cookies to be sent
 }));
+app.options('*', cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -24,13 +31,14 @@ const authRouter = require("./routers/auth");
 const profileRouter = require("./routers/profile");
 const requestRouter = require("./routers/requests");
 const userRouter = require("./routers/user");
+const paymentRouter = require('./routers/payment');
 // const messageRouter=require("./routers/mesage")
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
-// app.use("/", messageRouter);
+app.use("/", paymentRouter);
 
 connectDB().then(() => {
     console.log("Database connection established!!!");
