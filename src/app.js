@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middleware/auth");
 const cors = require("cors");
+const http = require("http");
 
 require("dotenv").config();
 
@@ -32,6 +33,8 @@ const profileRouter = require("./routers/profile");
 const requestRouter = require("./routers/requests");
 const userRouter = require("./routers/user");
 const paymentRouter = require('./routers/payment');
+const initializeSocket = require('./utils/socket');
+const chatRouter = require('./routers/chat');
 // const messageRouter=require("./routers/mesage")
 
 app.use("/", authRouter);
@@ -39,14 +42,18 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", paymentRouter);
+app.use("/", chatRouter);
+
+const server = http.createServer(app);
+initializeSocket(server);
 
 connectDB().then(() => {
     console.log("Database connection established!!!");
+    server.listen(4000, () => {
+        console.log("listening!!!");
+    })
 })
     .catch((err) => {
         console.log("Database connection cannot be established!!!");
     })
 
-app.listen(4000, () => {
-    console.log("listening!!!");
-})
